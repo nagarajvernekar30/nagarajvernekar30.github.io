@@ -187,7 +187,7 @@
   .section-head.center p{ max-width:520px; margin-left:auto; margin-right:auto; }
 
   /* ---------- about ---------- */
-  #about .grid{ display:grid; grid-template-columns:1fr; gap:64px; align-items:start; max-width:720px; }
+  #about .grid{ display:grid; grid-template-columns:1fr; gap:64px; align-items:start; max-width:820px; margin-left:auto; margin-right:auto; }
   #about .bio p{ font-size:1.18rem; color:var(--text-dim); margin:0 0 20px; }
   #about .bio strong{ color:var(--text); font-weight:700; }
   .factlist{ display:flex; flex-direction:column; border-top:1px solid var(--line); }
@@ -250,19 +250,41 @@
   .pub .link:hover{ border-color:var(--accent); color:var(--accent); }
   @media (max-width:640px){ .pub{ grid-template-columns:1fr; gap:8px; } .pub .link{ justify-self:start; } }
 
-  /* ---------- timeline ---------- */
-  .tl{ position:relative; padding-left:28px; }
-  .tl::before{ content:''; position:absolute; left:0; top:6px; bottom:6px; width:1px; background:var(--line); }
-  .tl-item{ position:relative; padding-bottom:42px; }
-  .tl-item:last-child{ padding-bottom:0; }
-  .tl-item::before{ content:''; position:absolute; left:-33px; top:5px; width:9px; height:9px; border-radius:50%; background:var(--bg); border:2px solid var(--accent); }
-  .tl-item .when{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--accent); }
-  .tl-item h3{ font-size:1.18rem; margin-top:8px; }
-  .tl-item .where{ color:var(--text-dim); font-size:14px; margin-top:4px; }
-  .tl-item .detail{ color:var(--text-faint); font-size:14px; margin-top:8px; max-width:560px; }
+  /* ---------- timeline (horizontal zig-zag, collapses to a stacked list when tight) ---------- */
+  .tlz{
+    display:grid; grid-auto-flow:column; grid-template-rows:auto auto auto;
+    grid-auto-columns:minmax(0,1fr); column-gap:16px; align-items:stretch;
+  }
+  .tlz-item{ display:contents; }
+  .tlz-top{ display:flex; flex-direction:column; justify-content:flex-end; align-items:center; text-align:center; padding:0 10px 20px; }
+  .tlz-bottom{ display:flex; flex-direction:column; justify-content:flex-start; align-items:center; text-align:center; padding:20px 10px 0; }
+  .tlz-mid{ position:relative; display:flex; justify-content:center; align-items:center; min-height:14px; }
+  .tlz-mid::before, .tlz-mid::after{ content:''; position:absolute; top:50%; height:1px; background:var(--line); }
+  .tlz-mid::before{ left:0; right:50%; margin-right:9px; }
+  .tlz-mid::after{ left:50%; right:0; margin-left:9px; }
+  .tlz-mid.edge-l::before{ display:none; }
+  .tlz-mid.edge-r::after{ display:none; }
+  .tlz-dot{ width:13px; height:13px; border-radius:50%; background:var(--bg); border:2.5px solid var(--tlz-c,var(--accent)); box-shadow:0 0 0 6px var(--bg); position:relative; z-index:1; }
+  .tlz-year{
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--line); padding:7px 14px; border-radius:100px; white-space:nowrap;
+  }
+  .tlz-role{ font-family:'Unbounded',sans-serif; font-weight:600; font-size:1.02rem; color:var(--tlz-c,var(--text)); margin-bottom:6px; line-height:1.3; }
+  .tlz-where{ font-size:13px; color:var(--text-dim); line-height:1.4; }
+  .tlz-detail{ font-size:12.5px; color:var(--text-faint); margin-top:8px; line-height:1.45; }
+  @media (max-width:980px){
+    .tlz{ display:flex; flex-direction:column; }
+    .tlz-item{ display:flex; flex-direction:column; align-items:flex-start; padding:22px 0; border-top:1px solid var(--line-soft); }
+    .tlz-item:first-child{ border-top:none; padding-top:0; }
+    .tlz-top, .tlz-bottom{ padding:0; align-items:flex-start; text-align:left; }
+    .tlz-top{ order:1; } .tlz-mid{ display:none; } .tlz-bottom{ order:2; margin-top:10px; }
+    .tlz-where, .tlz-detail{ text-align:left; }
+  }
 
   /* ---------- tools ---------- */
   .tool-groups{ display:grid; grid-template-columns:1fr 1fr; gap:48px; }
+  #talks .grid{ display:grid; grid-template-columns:1fr 1fr; gap:48px; }
+  @media (max-width:700px){ #talks .grid{ grid-template-columns:1fr; } }
   .tool-groups h3{ font-family:'IBM Plex Mono',monospace; text-transform:uppercase; font-size:12px; letter-spacing:.08em; color:var(--text-faint); font-weight:500; margin-bottom:16px; }
   .chip-row{ display:flex; flex-wrap:wrap; gap:9px; }
   .chip{ font-size:13.5px; padding:8px 14px; border-radius:9px; background:var(--panel); border:1px solid var(--line); }
@@ -1345,35 +1367,50 @@
       <div class="eyebrow">CV</div>
       <h2>Education &amp; experience.</h2>
     </div>
-    <div class="tl reveal">
-      <div class="tl-item">
-        <div class="when mono">Jan 2026 — Present</div>
-        <h3>Postdoctoral Researcher</h3>
-        <div class="where">Galactic Archaeology Group, University of Oklahoma</div>
-        <div class="detail">Supervisor: Prof. Michael Hayden.</div>
+    <div class="tlz reveal">
+      <div class="tlz-item" style="--tlz-c:#45e0c4;">
+        <div class="tlz-top">
+          <div class="tlz-role">Postdoctoral Researcher</div>
+          <div class="tlz-where">Galactic Archaeology Group, University of Oklahoma</div>
+          <div class="tlz-detail">Supervisor: Prof. Michael Hayden.</div>
+        </div>
+        <div class="tlz-mid edge-l"><span class="tlz-dot"></span></div>
+        <div class="tlz-bottom"><div class="tlz-year">Jan 2026 — Present</div></div>
       </div>
-      <div class="tl-item">
-        <div class="when mono">Oct 2022 — Sep 2025</div>
-        <h3>PhD in Astrophysics</h3>
-        <div class="where">Università di Padova &amp; INAF–OAPd</div>
-        <div class="detail">Galactic archaeology with machine learning and novel data. Supervisors: Dr. Sara Lucatello, Dr. Lorenzo Spina.</div>
+      <div class="tlz-item" style="--tlz-c:#e8ac4d;">
+        <div class="tlz-top"><div class="tlz-year">Oct 2022 — Sep 2025</div></div>
+        <div class="tlz-mid"><span class="tlz-dot"></span></div>
+        <div class="tlz-bottom">
+          <div class="tlz-role">PhD in Astrophysics</div>
+          <div class="tlz-where">Università di Padova &amp; INAF–OAPd</div>
+          <div class="tlz-detail">Galactic archaeology with machine learning and novel data. Supervisors: Dr. Sara Lucatello, Dr. Lorenzo Spina.</div>
+        </div>
       </div>
-      <div class="tl-item">
-        <div class="when mono">Feb 2022 — Sep 2022</div>
-        <h3>Research Assistant</h3>
-        <div class="where">Indian Institute of Astrophysics, Bengaluru</div>
-        <div class="detail">Blue straggler stars in globular clusters. Supervisor: Prof. Annapurni Subramaniam.</div>
+      <div class="tlz-item" style="--tlz-c:#7ea6f2;">
+        <div class="tlz-top">
+          <div class="tlz-role">Research Assistant</div>
+          <div class="tlz-where">Indian Institute of Astrophysics, Bengaluru</div>
+          <div class="tlz-detail">Blue straggler stars in globular clusters. Supervisor: Prof. Annapurni Subramaniam.</div>
+        </div>
+        <div class="tlz-mid"><span class="tlz-dot"></span></div>
+        <div class="tlz-bottom"><div class="tlz-year">Feb 2022 — Sep 2022</div></div>
       </div>
-      <div class="tl-item">
-        <div class="when mono">Sep 2019 — Jan 2022</div>
-        <h3>MSc, Astronomy &amp; Astrophysics</h3>
-        <div class="where">Katholieke Universiteit Leuven</div>
-        <div class="detail">Thesis: photometric and spectroscopic variability of Be stars — the case of HD 93683. Supervisors: Dr. Dominic M. Bowman, Dr. Julia Bodensteiner.</div>
+      <div class="tlz-item" style="--tlz-c:#e06b8b;">
+        <div class="tlz-top"><div class="tlz-year">Sep 2019 — Jan 2022</div></div>
+        <div class="tlz-mid"><span class="tlz-dot"></span></div>
+        <div class="tlz-bottom">
+          <div class="tlz-role">MSc, Astronomy &amp; Astrophysics</div>
+          <div class="tlz-where">Katholieke Universiteit Leuven</div>
+          <div class="tlz-detail">Thesis: photometric and spectroscopic variability of Be stars — the case of HD 93683. Supervisors: Dr. Dominic M. Bowman, Dr. Julia Bodensteiner.</div>
+        </div>
       </div>
-      <div class="tl-item">
-        <div class="when mono">2016 — 2019</div>
-        <h3>BSc, Physics, Chemistry &amp; Mathematics</h3>
-        <div class="where">Christ (Deemed to be University), Bengaluru</div>
+      <div class="tlz-item" style="--tlz-c:#a78bfa;">
+        <div class="tlz-top">
+          <div class="tlz-role">BSc, Physics, Chemistry &amp; Mathematics</div>
+          <div class="tlz-where">Christ (Deemed to be University), Bengaluru</div>
+        </div>
+        <div class="tlz-mid edge-r"><span class="tlz-dot"></span></div>
+        <div class="tlz-bottom"><div class="tlz-year">2016 — 2019</div></div>
       </div>
     </div>
   </section>
@@ -1530,11 +1567,11 @@
   </section>
 
   <section id="outreach">
-    <div class="section-head reveal">
+    <div class="section-head reveal" style="max-width:840px;margin-left:auto;margin-right:auto;">
       <div class="eyebrow">Public Outreach</div>
       <h2>Teaching &amp; sharing astronomy.</h2>
     </div>
-    <div class="listcol reveal" style="max-width:640px;">
+    <div class="listcol reveal" style="max-width:840px;margin-left:auto;margin-right:auto;">
       <div class="li"><div class="t">Project Mentorship, Naxxatra Sciences and Collaborative Research — supervised about 30 undergraduate students to gain initial experience in astrophysics research</div><div class="s">Apr 2022 — Mar 2023</div></div>
       <div class="li"><div class="t">Workshop Lead, Observational Astrophysics, Indian Institute of Science, Bengaluru — ~70 students</div><div class="s">Aug 2022</div></div>
       <div class="li"><div class="t">"Essential techniques in Spectroscopy" — invited talk, Naxxatra Astrophysics Seminar, Bengaluru</div><div class="s">Jul 2022</div></div>

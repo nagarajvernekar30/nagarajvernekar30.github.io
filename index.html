@@ -208,6 +208,10 @@
   .research-index{ display:flex; flex-direction:column; gap:2px; }
   .research-index .r-item{ display:flex; align-items:baseline; gap:14px; padding:13px 0; border-bottom:1px solid var(--line-soft); opacity:.38; transition:opacity .35s ease; }
   .research-index .r-item.active{ opacity:1; }
+  .research-index .r-item{ cursor:pointer; }
+  .research-index .r-item:hover{ opacity:.8; }
+  .research-index .r-item.active:hover{ opacity:1; }
+  .research-index .r-item:focus-visible{ outline:2px solid var(--accent); outline-offset:4px; border-radius:6px; }
   .research-index .num{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--accent); }
   .research-index .r-title{ font-size:1.02rem; font-family:'Unbounded',sans-serif; font-weight:500; }
 
@@ -1660,6 +1664,24 @@
     items.forEach(function(it,i){ it.classList.toggle('active', i===idx); });
     cards.forEach(function(c,i){ c.classList.toggle('active', i===idx); });
   }
+
+  // click / keyboard on the index jumps to that card (scroll position drives state)
+  function goToResearch(i){
+    if(!pinOuter) return;
+    var vh = window.innerHeight;
+    var total = pinOuter.offsetHeight - vh;
+    var top = pinOuter.getBoundingClientRect().top + window.pageYOffset;
+    var target = top + ((i + 0.5) / N) * total;
+    window.scrollTo({ top: target, behavior: 'smooth' });
+  }
+  items.forEach(function(it, i){
+    it.setAttribute('role','button');
+    it.setAttribute('tabindex','0');
+    it.addEventListener('click', function(){ goToResearch(i); });
+    it.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); goToResearch(i); }
+    });
+  });
 
   var ticking = false;
   function onScroll(){
